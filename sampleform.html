@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="form-group">
+            <p><h2>Pricing is based on Number of users. Select the number of users accordingly</h2></p>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="form-group">
+            <label for="userSlider">Number of Users:</label>
+            <p id="userCount">0 Users</p>
+            <input type="range" class="form-control-range" id="userSlider" min="0" max="100" step="10" value="0">
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Plan 1</h5>
+                        <p class="card-text">$10/month</p>
+                        <button class="btn btn-primary pricing-btn" data-toggle="modal" data-target="#pricingModal" data-plan="Plan 1">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Plan 2</h5>
+                        <p class="card-text">$20/month</p>
+                        <button class="btn btn-primary pricing-btn" data-toggle="modal" data-target="#pricingModal" data-plan="Plan 2">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Plan 3</h5>
+                        <p class="card-text">$30/month</p>
+                        <button class="btn btn-primary pricing-btn" data-toggle="modal" data-target="#pricingModal" data-plan="Plan 3">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="pricingModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select a Plan</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="pricingForm" action="https://forms.maakeetoo.com/formapi/264" >
+                        <input type="hidden" id="selectedPlan" value="">
+                        <div class="form-group">
+                            <label for="firstname">firstname</label>
+                            <input type="text" class="form-control" id="firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Order Comments:</label>
+                            <textarea class="form-control" id="message"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userSlider = document.getElementById('userSlider');
+            const userCountElement = document.getElementById('userCount');
+            const selectedPlanInput = document.getElementById('selectedPlan');
+            const pricingForm = document.getElementById('pricingForm');
+            
+            // Event listener for the slider
+            userSlider.addEventListener('input', function () {
+                const selectedUsers = parseInt(this.value);
+                userCountElement.textContent = selectedUsers + ' Users'; 
+                highlightPlan(selectedUsers);
+            });
+            const pricingButtons = document.querySelectorAll('.pricing-btn');
+            pricingButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const plan = this.getAttribute('data-plan');
+                    selectedPlanInput.value = plan;
+                });
+            });
+
+            function highlightPlan(users) {
+                pricingButtons.forEach(function (button) {
+                    button.classList.remove('btn-success');
+                });
+                if (users >= 0 && users < 10) {
+                    document.querySelector('[data-plan="Plan 1"]').classList.add('btn-success');
+                } else if (users >= 10 && users < 20) {
+                    document.querySelector('[data-plan="Plan 2"]').classList.add('btn-success');
+                } else if (users >= 20 && users <= 100) {
+                    document.querySelector('[data-plan="Plan 3"]').classList.add('btn-success');
+                }
+            }
+            pricingForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const firstname = document.getElementById('firstname').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+
+                const formData = new FormData(pricingForm);
+
+                fetch('https://forms.maakeetoo.com/formapi/264', {
+                    method: 'POST',
+                    mode:'no-cors',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Form submission failed. Please try again later');
+                        pricingForm.reset();
+                    } else {
+                        alert('Form submitted successfully!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting the form. Please try again later.');
+                });
+            });
+
+        });
+
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
